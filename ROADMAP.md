@@ -85,3 +85,13 @@ The goal for V1.0.0 is to evolve the script into a robust, user-friendly, and di
 
 - *As a user, I want to be able to download and run the application as a single file so that I don't have to install Python or any other dependencies.*
 - *As a user, I want to be able to install the application using a simple installer so that it is properly integrated with my operating system (e.g., with a desktop shortcut and an uninstaller).*
+
+---
+
+### ✨ Core Features
+
+* **Automatic File Classification:** Scans the target directory and classifies files into default categories based on their extension (e.g., Images, Documents, Archives, Audio, Video, Executables).
+* **Sensible Subfolder Organisation:** Creates a clean folder structure (e.g., `~/Downloads/Fylum/Images`) to house the sorted files.
+* **Smart File Renaming:** Renames files to a consistent `YYYY-MM-DD_original-filename.ext` format for easy chronological sorting.
+* **Creation of Index Manifest:** Generates a `_fylum_index.md` file in the root of the organised folder, mapping every original filename to its new name and location for easy reference.
+* **Basic CLI:** Run Fylum from your terminal with a single command to start the organisation process.
