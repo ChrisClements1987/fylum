@@ -8,7 +8,7 @@ This document outlines the development roadmap for the Fylum application, detail
 
 **Goal:** To deliver a robust, configurable CLI tool that provides immediate value for organizing files and serves as a solid foundation for future development.
 
-### Features
+### Core Features
 
 *   **Core CLI Tool:**
     *   A primary interface for all functionality, designed to be used in the terminal by users, power users, and AI agents.
@@ -17,16 +17,22 @@ This document outlines the development roadmap for the Fylum application, detail
     *   A human-readable `config.yaml` file for customization.
     *   **Folder Selection:** Specify target directories for cleaning.
     *   **Ignore Lists:** Define file patterns or directories to be excluded.
-    *   **Customizable Rules:** Define rules for file classification and subfolder organization (e.g., mapping `.jpg` and `.png` to an `Images` folder).
+    *   **Customizable Rules:** Define rules for file classification and subfolder organization.
 
 *   **Smart File Renaming:**
-    *   Rename files to a consistent format. The default will be `YYYY-MM-DD_original-filename.ext`, but this will be customizable via the configuration file.
+    *   Rename files to a consistent, customizable format (e.g., `YYYY-MM-DD_original-filename.ext`).
 
 *   **Index Manifest:**
-    *   Generate a `_fylum_index.md` file that logs all file movements, mapping original paths to their new locations. This is a crucial first step for potential future features like "undo" functionality.
+    *   Generate a `_fylum_index.md` file that logs all file movements, mapping original paths to their new locations.
 
 *   **Standalone Executable:**
-    *   Package the application as a single executable for easy distribution and execution without requiring a Python installation.
+    *   Package the application as a single executable for easy distribution.
+
+### Foundational Practices
+
+*   **Comprehensive Testing:** Implement a full suite of unit and integration tests to ensure reliability.
+*   **Basic Security Hardening:** Ensure file paths are handled safely and permissions are managed correctly.
+*   **Robust Encoding Support:** Natively support various character encodings in filenames to prevent errors across different systems and languages.
 
 ---
 
@@ -38,16 +44,18 @@ This document outlines the development roadmap for the Fylum application, detail
 
 *   **Graphical User Interface (GUI):**
     *   A desktop application that wraps the core logic of the CLI tool.
-    *   Will allow users to select folders, configure rules, and run the cleaning process from a visual interface.
 
 *   **Interactive Mode:**
-    *   The GUI will provide an interactive mode where users can preview and approve file operations before they are executed.
+    *   Provide an interactive mode where users can preview and approve file operations before they are executed.
 
 *   **Scheduling:**
-    *   Ability to schedule the cleaning process to run automatically at specified intervals (e.g., daily, weekly).
+    *   Ability to schedule the cleaning process to run automatically at specified intervals.
+
+*   **System Notifications:**
+    *   Provide native desktop notifications on task completion.
 
 *   **Installer:**
-    *   A simple installer to properly integrate the application with the user's operating system (e.g., adding a desktop shortcut, entry in the start menu, and an uninstaller).
+    *   A simple installer for easy integration with the user's operating system.
 
 ---
 
@@ -58,7 +66,16 @@ This document outlines the development roadmap for the Fylum application, detail
 ### Potential Features
 
 *   **Advanced Duplicate File Detection:**
-    *   Implement a robust system to identify and manage duplicate files, potentially using file hashes instead of just filenames.
+    *   Implement a robust system to identify and manage duplicate files, potentially using file hashes.
 
 *   **"Undo" Functionality:**
-    *   A feature to safely revert the last cleaning operation, likely leveraging the data from the Index Manifest.
+    *   A feature to safely revert the last cleaning operation, likely leveraging the Index Manifest.
+
+*   **Performance Benchmarking & Optimization:**
+    *   Establish performance benchmarks and optimize the application for handling very large volumes of files.
+
+*   **Plugin Architecture for Extensibility:**
+    *   Refactor the core logic to support plugins, allowing for community contributions of new rules and actions.
+
+*   **Full Internationalization (i18n):**
+    *   Translate the application's UI into multiple languages.
