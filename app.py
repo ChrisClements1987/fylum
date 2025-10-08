@@ -1,77 +1,74 @@
-import os
-import shutil
-import time
 
-# Set the directory to be cleaned
-DOWNLOADS_DIR = os.path.expanduser("~/Downloads")
-DESTINATION_BASE_DIR = os.path.join(DOWNLOADS_DIR, "Cleaned Files")
-LOG_FILE_PATH = os.path.join(DESTINATION_BASE_DIR, "_Log.txt")
+import typer
+from typing_extensions import Annotated
 
-# Define the folder structure and file extensions
-FILE_TYPE_MAPPING = {
-    "Documents": ['.doc', '.docx', '.pdf', '.rtf', '.wpd', '.txt', '.wps', '.msg', '.md', '.yml', '.tf', '.Dockerfile', '.ppt', '.pptx', '.gslides', '.key', '.odp', '.csv', '.xls', '.xlsx'],
-    "Media/Images": ['.png', '.jpg', '.jpeg', '.gif', '.heif', '.svg', '.webp', '.tif', '.bmp', '.eps'],
-    "Media/Videos": ['.amv', '.mpeg', '.flv', '.avi', '.mp4', '.3gp', '.mov', '.wmv'],
-    "Media/Audio": ['.aac', '.mp3', '.wav', '.wma', '.snd', '.ra', '.au'],
-    "Development": ['.c', '.py', '.java', '.js', '.cpp', '.ts', '.cs', '.swift', '.pl', '.bat', '.sh'],
-    "Installers": ['.com', '.exe', '.iso', '.msi'],
-    "Web": ['.htm', '.html', '.xhtml', '.aspx', '.asp', '.css', '.xps', '.rss'],
-    "Archives": ['.rar', '.tar', '.7z', '.zip', '.hgx', '.arj', '.arc', '.sit', '.gz', '.z'],
-    "Data": ['.xml', '.json', '.sql', '.dta'],
-    "Other": []  # For files that don't match any other category
-}
+from src import config
+from src.engine import RuleEngine
+from src.processor import FileProcessor
+from src.undo import UndoManager
 
-def create_destination_folders():
-    """Creates the destination folders if they don't exist."""
-    for folder in FILE_TYPE_MAPPING.keys():
-        os.makedirs(os.path.join(DESTINATION_BASE_DIR, folder), exist_ok=True)
-    os.makedirs(os.path.join(DESTINATION_BASE_DIR, "Other"), exist_ok=True)
+app = typer.Typer()
 
-def get_destination_folder(file_extension):
-    """Returns the destination folder for a given file extension."""
-    for folder, extensions in FILE_TYPE_MAPPING.items():
-        if file_extension.lower() in extensions:
-            return os.path.join(DESTINATION_BASE_DIR, folder)
-    return os.path.join(DESTINATION_BASE_DIR, "Other")
+@app.command()
+def clean(
+    dry_run: Annotated[
+        bool,
+        typer.Option(
+            "--dry-run",
+            help="Preview the file operations without making any changes."
+        ),
+    ] = False
+):
+    """Organizes files in the target directories based on the rules in config.yaml."""
+    cfg = config.load_config()
+    typer.echo("Configuration loaded successfully.")
+    
+    if dry_run:
+        typer.echo("--- DRY RUN MODE ---")
+        typer.echo("No files will be moved or renamed.")
 
-def clean_folder():
-    """Organizes files in the Downloads folder."""
-    with open(LOG_FILE_PATH, 'a+') as log_file:
-        log_file.write(f"Script started at: {time.ctime()}\n")
-        for root, _, files in os.walk(DOWNLOADS_DIR):
-            # Skip the destination directory itself
-            if os.path.commonpath([root, DESTINATION_BASE_DIR]) == DESTINATION_BASE_DIR:
-                continue
+    # Instantiate and run the engine
+    engine = RuleEngine(config=cfg, dry_run=dry_run)
+    actions = engine.process_directories()
 
-            for file in files:
-                source_path = os.path.join(root, file)
+    if not actions:
+        typer.echo("No files found that match the rules. Everything is already organized.")
+        raise typer.Exit()
 
-                # Skip the log file itself
-                if source_path == LOG_FILE_PATH:
-                    continue
+    typer.echo(f"Found {len(actions)} actions to perform.")
 
-                _, file_extension = os.path.splitext(file)
-                destination_folder = get_destination_folder(file_extension)
-                destination_path = os.path.join(destination_folder, file)
+    processor = FileProcessor(rename_format=cfg.rename_format, dry_run=dry_run)
+    processed = processor.process_actions(actions)
 
-                # Check if the destination path already exists
-                if os.path.exists(destination_path):
-                    log_file.write(f"Skipped (already exists): {source_path}\n")
-                    continue
+    if dry_run:
+        typer.echo(f"\n[DRY RUN] Would have processed {processed} files.")
+    else:
+        typer.echo(f"\nSuccessfully processed {processed} files.")
+        typer.echo("Index manifest updated: _fylum_index.md")
+    
+    typer.echo("Done.")
 
-                try:
-                    shutil.move(source_path, destination_path)
-                    log_file.write(f"Moved: {source_path} -> {destination_path}\n")
-                except OSError as e:
-                    if e.winerror == 32:  # File is in use
-                        log_file.write(f"Skipped (file in use): {source_path}\n")
-                    else:
-                        log_file.write(f"Error moving {source_path}: {e}\n")
-                except Exception as e:
-                    log_file.write(f"Error moving {source_path}: {e}\n")
-        log_file.write(f"Script finished at: {time.ctime()}\n\n")
+@app.command()
+def undo():
+    """Reverts the last cleaning operation."""
+    typer.echo("Looking for the index manifest to undo the last operation...")
+    
+    undo_manager = UndoManager()
+    reverted_count = undo_manager.revert_last_run()
+    
+    if reverted_count > 0:
+        typer.echo(f"Successfully reverted {reverted_count} files to their original locations.")
+    else:
+        typer.echo("No files were reverted.")
+
+
+@app.callback()
+def main():
+    """
+    Fylum: A smart file organizer.
+    """
+    pass
 
 if __name__ == "__main__":
-    create_destination_folders()
-    clean_folder()
-    print(f"Folder cleaning complete. See {LOG_FILE_PATH} for details.")
+    app()
+
