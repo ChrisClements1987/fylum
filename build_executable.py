@@ -18,11 +18,11 @@ def build_executable():
     
     try:
         import PyInstaller
-        print(f"✓ PyInstaller {PyInstaller.__version__} found")
+        print(f"[OK] PyInstaller {PyInstaller.__version__} found")
     except ImportError:
-        print("✗ PyInstaller not found. Installing...")
+        print("[INFO] PyInstaller not found. Installing...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller>=6.0.0"])
-        print("✓ PyInstaller installed")
+        print("[OK] PyInstaller installed")
     
     print("\n Building executable with PyInstaller...")
     
@@ -32,12 +32,18 @@ def build_executable():
         "--name=fylum",
         "--clean",
         "--noconfirm",
+        "--hidden-import=typer",
+        "--hidden-import=pydantic",
+        "--hidden-import=pydantic_core",
+        "--hidden-import=yaml",
+        "--collect-all=typer",
+        "--collect-all=pydantic",
         "app.py"
     ]
     
     try:
         subprocess.check_call(cmd)
-        print("\n✓ Build completed successfully!")
+        print("\n[OK] Build completed successfully!")
         
         dist_dir = Path("dist")
         if dist_dir.exists():
@@ -56,7 +62,7 @@ def build_executable():
             print("  ./dist/fylum --help")
         
     except subprocess.CalledProcessError as e:
-        print(f"\n✗ Build failed with error code {e.returncode}")
+        print(f"\n[ERROR] Build failed with error code {e.returncode}")
         sys.exit(1)
 
 
