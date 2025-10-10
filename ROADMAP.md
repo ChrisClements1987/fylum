@@ -68,9 +68,6 @@ This document outlines the development roadmap for the Fylum application, detail
 *   **Advanced Duplicate File Detection:**
     *   Implement a robust system to identify and manage duplicate files, potentially using file hashes.
 
-*   **"Undo" Functionality:**
-    *   A feature to safely revert the last cleaning operation, likely leveraging the Index Manifest.
-
 *   **Performance Benchmarking & Optimization:**
     *   Establish performance benchmarks and optimize the application for handling very large volumes of files.
 
