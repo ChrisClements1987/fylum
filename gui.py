@@ -74,9 +74,17 @@ class FylumGUI:
         
         print(f"Backend ready at {self.api_url}")
         
-        # TODO: Check if frontend build exists
-        # For now, use API docs as placeholder
-        frontend_url = f"{self.api_url}/docs"
+        # Check if frontend build exists
+        frontend_build = Path("web/dist/index.html")
+        if frontend_build.exists():
+            # Serve the built frontend
+            frontend_url = f"file://{frontend_build.resolve()}"
+            print("Using built frontend")
+        else:
+            # Development mode - use Vite dev server
+            # Run: npm run dev in web/ directory first
+            frontend_url = "http://localhost:5173"
+            print("Using development frontend (make sure Vite is running)")
         
         print("Opening desktop window...")
         
