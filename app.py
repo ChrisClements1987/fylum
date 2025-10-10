@@ -32,21 +32,27 @@ def clean(
     actions = engine.process_directories()
 
     if not actions:
-        typer.echo("No files found that match the rules. Everything is already organized.")
+        typer.echo("\nNo files found that match the configured rules.")
+        typer.echo("This could mean:")
+        typer.echo("  - All files are already organized")
+        typer.echo("  - Target directories are empty")
+        typer.echo("  - No files match the rule extensions in config.yaml")
         raise typer.Exit()
 
-    typer.echo(f"Found {len(actions)} actions to perform.")
+    typer.echo(f"\nFound {len(actions)} file(s) to process.")
 
     processor = FileProcessor(rename_format=cfg.rename_format, dry_run=dry_run)
     processed = processor.process_actions(actions)
 
     if dry_run:
-        typer.echo(f"\n[DRY RUN] Would have processed {processed} files.")
+        typer.echo(f"\n[DRY RUN] Would have processed {processed} file(s).")
     else:
-        typer.echo(f"\nSuccessfully processed {processed} files.")
-        typer.echo("Index manifest updated: _fylum_index.md")
+        typer.echo(f"\nSuccessfully processed {processed} file(s).")
+        typer.echo("Manifests created/updated:")
+        typer.echo("  - _fylum_index.md (human-readable)")
+        typer.echo("  - _fylum_index.json (machine-readable)")
     
-    typer.echo("Done.")
+    typer.echo("\nDone.")
 
 @app.command()
 def undo():
