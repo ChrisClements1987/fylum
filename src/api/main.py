@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
 
-from src.api.routes import config, operations, history
+from src.api.routes import config, operations, history, scheduler
 
 app = FastAPI(
     title="Fylum API",
@@ -28,6 +28,7 @@ app.add_middleware(
 app.include_router(config.router, prefix="/api/config", tags=["config"])
 app.include_router(operations.router, prefix="/api/operations", tags=["operations"])
 app.include_router(history.router, prefix="/api/history", tags=["history"])
+app.include_router(scheduler.router, prefix="/api/scheduler", tags=["scheduler"])
 
 
 @app.get("/")
