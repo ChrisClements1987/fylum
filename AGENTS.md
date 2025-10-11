@@ -20,25 +20,36 @@ Fylum is a smart file organizer CLI tool built with Python. It helps users autom
 
 ```
 fylum/
-├── app.py                  # Main CLI entry point
+├── app.py                  # CLI entry point (V1.0.0)
+├── gui.py                  # GUI entry point (V2.0.0)
 ├── src/
 │   ├── config.py          # Configuration loading & validation
 │   ├── engine.py          # RuleEngine - file matching logic
 │   ├── processor.py       # FileProcessor - file operations
-│   └── undo.py            # UndoManager - revert operations
-├── tests/
-│   ├── test_config.py     # Config unit tests
-│   ├── test_engine.py     # Engine unit tests
-│   ├── test_processor.py  # Processor unit tests
-│   ├── test_integration.py        # Integration tests
-│   └── test_security_edge_cases.py # Security & edge case tests
-├── architecture/          # ADRs and design docs
-├── config.yaml           # User configuration file (gitignored)
+│   ├── undo.py            # UndoManager - revert operations
+│   ├── api/               # V2.0.0 FastAPI backend
+│   │   ├── main.py        # API application
+│   │   ├── routes/        # API endpoints
+│   │   └── models/        # API data models
+│   ├── scheduler/         # V2.0.0 scheduling
+│   └── notifications/     # V2.0.0 notifications
+├── web/                   # V2.0.0 Svelte frontend
+│   ├── src/              # Frontend source
+│   └── dist/             # Production build
+├── tests/                # All test files
+│   ├── test_*.py         # Unit & integration tests
+│   └── test-execution-reports/  # UAT reports
+├── docs/                 # Documentation
+│   ├── architecture/     # ADRs and design docs
+│   ├── testing/          # Testing guides
+│   └── releases/         # Release notes
+├── config.yaml           # User configuration (gitignored)
 ├── requirements.txt      # Production dependencies
 ├── requirements-dev.txt  # Development dependencies
 ├── setup.py             # Package configuration
-├── build_executable.py  # Build script for executable
-└── README.md           # User documentation
+├── build_executable.py  # Build script
+├── run_tests.py         # Automated test runner
+└── README.md            # User documentation
 ```
 
 ## Core Components
@@ -146,7 +157,7 @@ fylum clean --dry-run
 
 ## Key Design Decisions
 
-See `architecture/` for full ADRs:
+See `docs/architecture/` for full ADRs:
 
 1. **CLI-First Approach** (ADR001): Build CLI before GUI to establish core logic
 2. **YAML Configuration**: Human-readable, easy to version control
@@ -159,7 +170,9 @@ See `architecture/` for full ADRs:
 1. **Unit Tests**: Test individual components in isolation
 2. **Integration Tests**: Test end-to-end workflows
 3. **Security Tests**: Path traversal, permissions, edge cases
-4. **UAT**: Manual testing via `UAT_TEST_PLAN.md`
+4. **UAT**: Manual testing via `docs/testing/UAT_TEST_PLAN.md`
+
+See [docs/testing/TESTING.md](docs/testing/TESTING.md) for complete testing guide.
 
 ## Branching Strategy
 
@@ -192,7 +205,7 @@ See `architecture/` for full ADRs:
 - Focus: Desktop GUI application
 - Features: Interactive mode, scheduling, notifications
 
-See `ROADMAP.md` for full details.
+See `docs/ROADMAP.md` for full details.
 
 ## Important Notes for AI Assistants
 

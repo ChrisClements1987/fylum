@@ -64,6 +64,15 @@ python app.py clean
 python app.py undo
 ```
 
+## 📚 Documentation
+
+Complete documentation available in the [docs/](docs/) directory:
+
+- **Planning**: [Roadmap](docs/ROADMAP.md) | [V2 Planning](docs/V2_PLANNING.md)
+- **Architecture**: [ADRs](docs/architecture/)
+- **Testing**: [Testing Guide](docs/testing/TESTING.md) | [UAT Guide](docs/testing/UAT_TESTING_GUIDE.md)
+- **Releases**: [Release Notes](docs/releases/) | [GitHub Release Guide](docs/releases/GITHUB_RELEASE_INSTRUCTIONS.md)
+
 ## 📖 Configuration
 
 Fylum uses a `config.yaml` file to define how files should be organized. Here's an example:
