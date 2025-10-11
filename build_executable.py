@@ -29,16 +29,23 @@ def build_executable():
     cmd = [
         "pyinstaller",
         "--onefile",
-        "--name=fylum",
+        "--name=fylum-gui",
         "--clean",
         "--noconfirm",
         "--hidden-import=typer",
         "--hidden-import=pydantic",
         "--hidden-import=pydantic_core",
         "--hidden-import=yaml",
+        "--hidden-import=fastapi",
+        "--hidden-import=uvicorn",
+        "--hidden-import=webview",
+        "--hidden-import=apscheduler",
+        "--hidden-import=plyer",
         "--collect-all=typer",
         "--collect-all=pydantic",
-        "app.py"
+        "--collect-all=fastapi",
+        "--add-data=web/dist;web/dist",
+        "gui.py"
     ]
     
     try:
