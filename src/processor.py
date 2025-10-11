@@ -14,11 +14,12 @@ class FileAction:
 
 
 class FileProcessor:
-    def __init__(self, rename_format: str, dry_run: bool = False):
+    def __init__(self, rename_format: str, dry_run: bool = False, notification_manager=None):
         self.rename_format = rename_format
         self.dry_run = dry_run
         self.manifest_path = Path("_fylum_index.md")
         self.actions_log = []
+        self.notification_manager = notification_manager
 
     def apply_rename_format(self, file_path: Path) -> str:
         modification_time = datetime.fromtimestamp(file_path.stat().st_mtime)
@@ -64,6 +65,15 @@ class FileProcessor:
         
         if not self.dry_run and self.actions_log:
             self._write_manifest()
+            
+            # Send success notification
+            if self.notification_manager and processed_count > 0:
+                from src.notifications.manager import NotificationType
+                self.notification_manager.send_notification(
+                    title="Files Organized",
+                    message=f"Successfully processed {processed_count} file(s)",
+                    notification_type=NotificationType.SUCCESS
+                )
         
         return processed_count
 

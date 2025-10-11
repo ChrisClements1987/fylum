@@ -53,6 +53,7 @@ class ScheduleManager:
         self.storage_path = Path(storage_path)
         self.schedules: dict[str, Schedule] = {}
         self.scheduler = BackgroundScheduler()
+        self.notification_manager = None
     
     def add_schedule(self, schedule: Schedule):
         """Add a new schedule"""
@@ -148,6 +149,7 @@ class ScheduleManager:
         from src import config
         from src.engine import RuleEngine
         from src.processor import FileProcessor
+        from src.notifications.manager import NotificationType
         
         try:
             cfg = config.load_config()
@@ -155,10 +157,38 @@ class ScheduleManager:
             actions = engine.process_directories()
             
             if actions:
-                processor = FileProcessor(rename_format=cfg.rename_format, dry_run=False)
-                processor.process_actions(actions)
+                processor = FileProcessor(
+                    rename_format=cfg.rename_format,
+                    dry_run=False,
+                    notification_manager=self.notification_manager
+                )
+                processed = processor.process_actions(actions)
+                
+                # Send scheduled completion notification
+                if self.notification_manager:
+                    self.notification_manager.send_notification(
+                        title="Scheduled Clean Complete",
+                        message=f"Processed {processed} file(s) automatically",
+                        notification_type=NotificationType.INFO
+                    )
+            else:
+                # Notify that nothing was found
+                if self.notification_manager:
+                    self.notification_manager.send_notification(
+                        title="Scheduled Clean",
+                        message="No files to process",
+                        notification_type=NotificationType.INFO
+                    )
         except Exception as e:
             print(f"Scheduled clean failed: {e}")
+            
+            # Send error notification
+            if self.notification_manager:
+                self.notification_manager.send_notification(
+                    title="Scheduled Clean Failed",
+                    message=str(e),
+                    notification_type=NotificationType.ERROR
+                )
     
     def start(self):
         """Start the scheduler"""

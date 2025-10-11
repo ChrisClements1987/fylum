@@ -12,6 +12,11 @@ _fylum_index.md
 _fylum_index.json
 config.yaml
 
+# V2.0.0 artifacts
+schedules.json
+.coverage
+htmlcov/
+
 # Python cache
 __pycache__/
 *.pyc
